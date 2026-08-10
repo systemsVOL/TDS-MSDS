@@ -54,6 +54,46 @@ input:checked+.tog-track:before{transform:translateX(13px);}
 .lk-body{display:flex;flex-direction:column;gap:0;}
 .lk-row{display:grid;grid-template-columns:220px 1fr;gap:0;border-bottom:1px solid #eef1f5;padding:9px 4px;}
 .lk-row:last-child{border-bottom:none;}
+/* SECTION 8.2 — HORIZONTAL EXPOSURE CONTROL ROWS */
+.dynamic-exposure-row{
+  display:grid !important;
+  grid-template-columns:220px minmax(0,1fr) auto !important;
+  align-items:start;
+  gap:12px !important;
+  margin-bottom:12px !important;
+  width:100%;
+}
+.dynamic-exposure-row .field{
+  display:contents !important;
+}
+.dynamic-exposure-row .field > label{
+  grid-column:1;
+  align-self:start;
+  padding-top:7px;
+  margin:0;
+  line-height:1.35;
+}
+.dynamic-exposure-row .field > textarea{
+  grid-column:2;
+  width:100%;
+  min-width:0;
+  min-height:62px;
+}
+.dynamic-exposure-row > .row-btn{
+  grid-column:3;
+  align-self:start;
+  margin-top:0 !important;
+  white-space:nowrap;
+}
+@media(max-width:680px){
+  .dynamic-exposure-row{
+    grid-template-columns:170px minmax(0,1fr) auto !important;
+  }
+  .dynamic-exposure-row .field > label{
+    font-size:9px;
+  }
+}
+
 .lk-label{font-size:11px;font-weight:700;color:var(--teal-dark);padding-right:12px;line-height:1.5;}
 .lk-val{font-size:12px;color:#2a2a2a;line-height:1.7;}
 /* EDITABLE FIELDS */
@@ -106,6 +146,33 @@ textarea{resize:vertical;min-height:62px;line-height:1.5;}
   border-color:var(--teal);
   box-shadow:0 0 0 3px rgba(26,122,138,.12);
 }
+
+/* Dynamic row controls */
+.lk-row{position:relative;}
+.lk-row .row-actions{display:flex;align-items:flex-start;justify-content:flex-end;gap:5px;padding:0 0 0 8px;}
+.row-btn{border:1px solid var(--border);background:#fff;color:#555;border-radius:5px;padding:4px 8px;font-size:10px;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;}
+.row-btn:hover{border-color:var(--teal);color:var(--teal);}
+.row-btn.remove:hover{border-color:#d33;color:#c22;}
+.add-row-bar{display:flex;justify-content:flex-end;gap:7px;padding:10px 4px 2px;}
+.add-row-btn{border:1.5px solid var(--teal);background:#fff;color:var(--teal);border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;}
+.add-row-btn:hover{background:#eef8fa;}
+.lk-label[contenteditable="true"]{outline:none;border-radius:4px;padding:2px 4px;margin:-2px 4px -2px -4px;}
+.lk-label[contenteditable="true"]:focus{background:#eef8fa;box-shadow:0 0 0 2px rgba(26,122,138,.12);}
+@media(max-width:680px){.lk-row .row-actions{justify-content:flex-start;padding:6px 0 0;}.lk-row{grid-template-columns:1fr;}}
+
+
+.table-row-actions{display:flex;gap:7px;margin:8px 0 2px;flex-wrap:wrap;}
+.table-row-actions .add-row-btn,.table-row-actions .row-btn{cursor:pointer;}
+.dynamic-exposure-row{display:grid!important;grid-template-columns:1fr 3fr auto!important;align-items:start;gap:10px!important;}
+.dynamic-exposure-row .lk-label{font-weight:600;color:var(--teal-dark);font-size:11px;padding-top:7px;}
+.dynamic-exposure-row textarea{width:100%;min-height:58px;}
+@media(max-width:680px){.dynamic-exposure-row{grid-template-columns:1fr!important;}}
+
+.dynamic-row-controls{display:flex;gap:8px;margin:10px 0 8px;flex-wrap:wrap}
+.dynamic-add-btn,.dynamic-remove-btn{border:1px solid var(--teal);background:#fff;color:var(--teal-dark);border-radius:6px;padding:6px 11px;font-size:11px;font-weight:600;cursor:pointer}
+.dynamic-add-btn:hover,.dynamic-remove-btn:hover{background:#eef8fa}
+.dynamic-added-row{margin-top:8px;padding:8px;border:1px solid var(--border);border-radius:6px;background:#fafcfd}
+.dynamic-added-row .remove-single{margin-top:5px;border:0;background:#fff0f0;color:#b42318;border-radius:5px;padding:4px 8px;font-size:10px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -348,21 +415,18 @@ const SECTIONS = [
         <table>
           <thead><tr><th>Compartment</th><th>Value</th><th>Notes</th></tr></thead>
           <tbody id="pnecBody">
-            <tr><td style="font-size:11px;">Freshwater</td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr>
-            <tr><td style="font-size:11px;">Marine water</td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr>
-            <tr><td style="font-size:11px;">Freshwater sediment</td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr>
-            <tr><td style="font-size:11px;">Marine water sediment</td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr>
-            <tr><td style="font-size:11px;">Sewage Treatment Plant (STP)</td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr>
-            <tr><td style="font-size:11px;">Intermittent release</td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr>
-            <tr><td style="font-size:11px;">Secondary poisoning</td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr>
-            <tr><td style="font-size:11px;">Soil</td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr>
+            <tr><td><input type="text" class="pnec_comp" value="Freshwater"></td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr><tr><td><input type="text" class="pnec_comp" value="Marine water"></td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr><tr><td><input type="text" class="pnec_comp" value="Freshwater sediment"></td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr><tr><td><input type="text" class="pnec_comp" value="Marine water sediment"></td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr><tr><td><input type="text" class="pnec_comp" value="Sewage Treatment Plant (STP)"></td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr><tr><td><input type="text" class="pnec_comp" value="Intermittent release"></td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr><tr><td><input type="text" class="pnec_comp" value="Secondary poisoning"></td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr><tr><td><input type="text" class="pnec_comp" value="Soil"></td><td><input type="text" class="pnec_val" value="no data"></td><td><input type="text" class="pnec_note" value="no notes"></td></tr>
           </tbody>
         </table>
       </div>
+      <div class="table-row-actions pnec-actions">
+        <button type="button" class="add-row-btn" onclick="addPnecRow()">+ Add PNEC Row</button>
+        <button type="button" class="row-btn remove" onclick="removePnecRow()">Remove Last PNEC Row</button>
+      </div>
       <div class="sub-ttl" style="margin-top:16px;">8.2 Exposure Controls</div>
-      <div class="row r1"><div class="field"><label>8.2.1 Appropriate Engineering Controls</label><textarea id="s8_eng" placeholder="Ensure adequate ventilation..."></textarea></div></div>
-      <div class="row r1"><div class="field"><label>8.2.2 Individual Protection Measures / PPE</label><textarea id="s8_ppe" placeholder="Filter mask, protective gloves, safety glasses, work clothing, anti-slip shoes..."></textarea></div></div>
-      <div class="row r1"><div class="field"><label>8.2.3 Environmental Exposure Controls</label><textarea id="s8_env" placeholder="Avoid environmental spillage of both the product and its container..."></textarea></div></div>`
+      <div class="row r1 dynamic-exposure-row"><div class="field"><label>8.2.1 Appropriate Engineering Controls</label><textarea id="s8_eng" placeholder="Ensure adequate ventilation..."></textarea></div></div>
+      <div class="row r1 dynamic-exposure-row"><div class="field"><label>8.2.2 Individual Protection Measures / PPE</label><textarea id="s8_ppe" placeholder="Filter mask, protective gloves, safety glasses, work clothing, anti-slip shoes..."></textarea></div></div>
+      <div class="row r1 dynamic-exposure-row"><div class="field"><label>8.2.3 Environmental Exposure Controls</label><textarea id="s8_env" placeholder="Avoid environmental spillage of both the product and its container..."></textarea></div></div><div class="table-row-actions"><button type="button" class="add-row-btn" onclick="addExposureRow()">+ Add Exposure Control</button><button type="button" class="row-btn remove" onclick="removeExposureRow()">Remove Last Exposure Control</button></div>`
   },
   {
     id:'s9', num:'9', locked:false,
@@ -398,6 +462,10 @@ const SECTIONS = [
       <div class="row r2">
         <div class="field"><label>9.2.1 Information on Physical Hazard Classes</label><textarea id="s9_phys" placeholder="Explosive / Oxidising properties..."></textarea></div>
         <div class="field"><label>9.2.2 Other Safety Characteristics</label><textarea id="s9_safe" placeholder="Surface tension, refraction index..."></textarea></div>
+      </div>
+      <div id="s9-add-controls" class="dynamic-row-controls">
+        <button type="button" class="dynamic-add-btn" onclick="addSection9Property()">+ Add Row</button>
+        <button type="button" class="dynamic-remove-btn" onclick="removeSection9Property()">Remove Last Row</button>
       </div>`
   },
   {
@@ -432,6 +500,10 @@ const SECTIONS = [
         <div class="field"><label>11.1.6 Interactive Effects</label><textarea id="s11_int" placeholder="Non-applicable"></textarea></div>
         <div class="field"><label>11.1.7 Absence of Specific Data</label><textarea id="s11_abs" placeholder="Non-applicable"></textarea></div>
         <div class="field"><label>11.2 Information on Other Hazards</label><textarea id="s11_oth" placeholder="CMR, sensitisation, STOT, aspiration hazard..."></textarea></div>
+      </div>
+      <div id="s11-add-controls" class="dynamic-row-controls">
+        <button type="button" class="dynamic-add-btn" onclick="addSection11Row()">+ Add Row</button>
+        <button type="button" class="dynamic-remove-btn" onclick="removeSection11Row()">Remove Last Row</button>
       </div>`
   },
   {
@@ -450,6 +522,10 @@ const SECTIONS = [
         <div class="field"><label>12.5 Results of PBT and vPvB Assessment</label><textarea id="s12_pbt" placeholder="Not available"></textarea></div>
         <div class="field"><label>12.6 Endocrine Disrupting Properties</label><textarea id="s12_end" placeholder="Not described"></textarea></div>
         <div class="field"><label>12.7 Other Adverse Effects</label><textarea id="s12_oth" placeholder="Not described"></textarea></div>
+      </div>
+      <div id="s12-add-controls" class="dynamic-row-controls">
+        <button type="button" class="dynamic-add-btn" onclick="addSection12Row()">+ Add Row</button>
+        <button type="button" class="dynamic-remove-btn" onclick="removeSection12Row()">Remove Last Row</button>
       </div>`
   },
   {
@@ -481,7 +557,11 @@ const SECTIONS = [
     title:'Regulatory Information',
     short:'Regulatory',
     html:`<div class="row r1"><div class="field"><label>15.1 Safety, Health and Environmental Regulations / Legislation</label><textarea id="s15_reg" placeholder="Manufacture, Storage and Import of Hazardous Chemicals Rules 1989; Factories Act 1948; Chemical Accidents Rules 1996; Public Liability Insurance Act 1991..."></textarea></div></div>
-      <div class="row r1"><div class="field"><label>15.2 Chemical Safety Assessment</label><textarea id="s15_csa" placeholder="A Chemical Safety Assessment has / has not been carried out for this substance or mixture..."></textarea></div></div>`
+      <div class="row r1"><div class="field"><label>15.2 Chemical Safety Assessment</label><textarea id="s15_csa" placeholder="A Chemical Safety Assessment has / has not been carried out for this substance or mixture..."></textarea></div></div>
+      <div id="s15-add-controls" class="dynamic-row-controls">
+        <button type="button" class="dynamic-add-btn" onclick="addSection15Row()">+ Add Row</button>
+        <button type="button" class="dynamic-remove-btn" onclick="removeSection15Row()">Remove Last Row</button>
+      </div>`
   },
   {
     id:'s16', num:'16', locked:false,
@@ -512,6 +592,13 @@ function renderSidebar() {
       + '<div class="sb-label">' + s.short + '</div>'
       + (s.locked ? '<span class="sb-lock">&#128274;</span>' : '')
       + '<label class="tog"><input type="checkbox" ' + (on ? 'checked' : '') + ' onchange="setEnabled(\'' + s.id + '\',this.checked)"><div class="tog-track"></div></label>';
+    d.addEventListener('click', function(e) {
+      if (e.target && e.target.tagName === 'INPUT') return;
+      var cb = d.querySelector('input[type="checkbox"]');
+      if (!cb) return;
+      cb.checked = !cb.checked;
+      setEnabled(s.id, cb.checked);
+    });
     el.appendChild(d);
   });
 }
@@ -535,6 +622,15 @@ function renderSections() {
       + '</div>'
       + '<div class="sec-body open" id="body_' + s.id + '">' + bodyHtml + '</div>';
     el.appendChild(card);
+
+    // Add dynamic Add Row / Remove Row controls to every section that uses
+    // the standard .lk-body/.lk-row layout.
+    var lkBody = card.querySelector('.lk-body');
+    if (lkBody) setupDynamicRows(lkBody, s);
+
+    // Section 3 ingredient table also supports dynamic rows.
+    var ingBody = card.querySelector('#ingBody');
+    if (ingBody) setupIngredientRows(ingBody);
   });
   var doi = document.getElementById('s1_doi');
   if (doi && !doi.value) doi.valueAsDate = new Date();
@@ -560,6 +656,178 @@ function toggleAll(open) {
 }
 function enableAll() { SECTIONS.forEach(function(s){ setEnabled(s.id, true); }); renderSidebar(); }
 function updateCount() { document.getElementById('cnt').textContent = SECTIONS.filter(function(s){ return enabled[s.id]; }).length; }
+
+
+// ================================================================
+// DYNAMIC ROWS
+// ================================================================
+function setupDynamicRows(lkBody, section) {
+  Array.from(lkBody.querySelectorAll('.lk-row')).forEach(function(row) {
+    var label = row.querySelector('.lk-label');
+    if (label) label.setAttribute('contenteditable','true');
+
+    if (!row.querySelector('.row-actions')) {
+      var actions = document.createElement('div');
+      actions.className = 'row-actions';
+      var remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'row-btn remove';
+      remove.textContent = 'Remove';
+      remove.title = 'Remove this row';
+      remove.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var rows = lkBody.querySelectorAll('.lk-row');
+        if (rows.length <= 1) {
+          alert('Keep at least one row in this section.');
+          return;
+        }
+        row.remove();
+      };
+      actions.appendChild(remove);
+      row.appendChild(actions);
+    }
+  });
+
+  var bar = lkBody.querySelector('.add-row-bar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.className = 'add-row-bar';
+    var add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'add-row-btn';
+    add.textContent = '+ Add Row';
+    add.onclick = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      var row = document.createElement('div');
+      row.className = 'lk-row';
+
+      var label = document.createElement('div');
+      label.className = 'lk-label';
+      label.contentEditable = 'true';
+      label.textContent = getNextRowLabel(lkBody, section.num) + ' New Item';
+
+      var value = document.createElement('textarea');
+      value.className = 'lk-edit';
+      value.placeholder = 'Enter information...';
+
+      var actions = document.createElement('div');
+      actions.className = 'row-actions';
+      var remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'row-btn remove';
+      remove.textContent = 'Remove';
+      remove.onclick = function(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        var rows = lkBody.querySelectorAll('.lk-row');
+        if (rows.length <= 1) {
+          alert('Keep at least one row in this section.');
+          return;
+        }
+        row.remove();
+      };
+      actions.appendChild(remove);
+
+      row.appendChild(label);
+      row.appendChild(value);
+      row.appendChild(actions);
+      lkBody.appendChild(row);
+      value.focus();
+    };
+    bar.appendChild(add);
+    lkBody.appendChild(bar);
+  }
+}
+
+function getNextRowLabel(lkBody, sectionNum) {
+  var count = lkBody.querySelectorAll('.lk-row').length + 1;
+  return String(sectionNum) + '.' + count + '.';
+}
+
+function setupIngredientRows(tbody) {
+  var wrap = tbody.closest('.tbl-outer');
+  if (!wrap || wrap.querySelector('.ingredient-actions')) return;
+
+  var actions = document.createElement('div');
+  actions.className = 'ingredient-actions add-row-bar';
+
+  var add = document.createElement('button');
+  add.type = 'button';
+  add.className = 'add-row-btn';
+  add.textContent = '+ Add Ingredient Row';
+  add.onclick = function() {
+    var n = tbody.querySelectorAll('tr').length + 1;
+    var tr = document.createElement('tr');
+    var names = ['desc','cas','ec','reach','conc','pict','haz','hs'];
+    names.forEach(function(name) {
+      var td = document.createElement('td');
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.id = 'i' + n + '_' + name;
+      td.appendChild(input);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  };
+
+  var remove = document.createElement('button');
+  remove.type = 'button';
+  remove.className = 'row-btn remove';
+  remove.textContent = 'Remove Last Ingredient';
+  remove.onclick = function() {
+    var rows = tbody.querySelectorAll('tr');
+    if (rows.length <= 1) { alert('Keep at least one ingredient row.'); return; }
+    rows[rows.length - 1].remove();
+  };
+
+  actions.appendChild(add);
+  actions.appendChild(remove);
+  wrap.appendChild(actions);
+}
+
+function addPnecRow() {
+  var tbody=document.getElementById('pnecBody');
+  if(!tbody) return;
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td><input type="text" class="pnec_comp" placeholder="Compartment"></td>'
+    +'<td><input type="text" class="pnec_val" placeholder="Value"></td>'
+    +'<td><input type="text" class="pnec_note" placeholder="Notes"></td>';
+  tbody.appendChild(tr);
+}
+
+function removePnecRow() {
+  var tbody=document.getElementById('pnecBody');
+  if(!tbody) return;
+  var rows=tbody.querySelectorAll('tr');
+  if(rows.length<=1){alert('Keep at least one PNEC row.');return;}
+  rows[rows.length-1].remove();
+}
+
+function addExposureRow() {
+  var body=document.getElementById('body_s8');
+  if(!body) return;
+  var n=body.querySelectorAll('.dynamic-exposure-row').length+1;
+  var row=document.createElement('div');
+  row.className='row r1 dynamic-exposure-row';
+  row.innerHTML='<div class="field"><label contenteditable="true">8.2.'+(n+3)+'. Exposure control</label>'
+    +'<textarea class="s8_dynamic" placeholder="Enter exposure control information..."></textarea></div>'
+    +'<button type="button" class="row-btn remove" onclick="this.closest(\'.dynamic-exposure-row\').remove()">Remove</button>';
+  var bar=body.querySelector('.table-row-actions:not(.pnec-actions)');
+  if(bar) body.insertBefore(row,bar);
+  else body.appendChild(row);
+}
+
+function removeExposureRow() {
+  var body=document.getElementById('body_s8');
+  if(!body) return;
+  var rows=body.querySelectorAll('.dynamic-exposure-row');
+  if(rows.length<=1){alert('Keep at least one exposure control row.');return;}
+  rows[rows.length-1].remove();
+}
+
 function clearForm() {
   if (!confirm('Clear all editable fields?')) return;
   // Clear every editable field in every section.
@@ -1032,15 +1300,29 @@ function generatePDF() {
       ];
       drawTable(['DNEL values','','Oral exp. (Short)','Oral exp. (Long)','Dermal (Short)','Dermal (Long)','Inhal. (Short)','Inhal. (Long)'],
         dnelRows,[18,14,22,22,22,22,22,22]);
-      var pnecComps=['Freshwater','Marine water','Freshwater sediment','Marine water sediment','Sewage Treatment Plant (STP)','Intermittent release','Secondary poisoning','Soil'];
-      var pnecVals=document.querySelectorAll('.pnec_val');
-      var pnecNotes=document.querySelectorAll('.pnec_note');
-      var pnecRows=pnecComps.map(function(c,i){return [c,pnecVals[i]?pnecVals[i].value:'no data',pnecNotes[i]?pnecNotes[i].value:'no notes'];});
+      var pnecRows=[];
+      document.querySelectorAll('#pnecBody tr').forEach(function(tr){
+        var c=tr.querySelector('.pnec_comp');
+        var val=tr.querySelector('.pnec_val');
+        var note=tr.querySelector('.pnec_note');
+        pnecRows.push([
+          c ? c.value : '',
+          val ? val.value : '',
+          note ? note.value : ''
+        ]);
+      });
       drawTable(['Compartment','Value','Note(s)'],pnecRows,[50,40,34]);
       subItem(sNum+'.2.','Exposure controls:'); gap(1);
       subSubItem(sNum+'.2.1.','Appropriate engineering controls:',v('s8_eng')); gap(1);
       subSubItem(sNum+'.2.2.','Individual protection measures, such as personal protective equipment:',v('s8_ppe')); gap(1);
-      subSubItem(sNum+'.2.3.','Environmental exposure controls:',v('s8_env')); gap(5);
+      subSubItem(sNum+'.2.3.','Environmental exposure controls:',v('s8_env')); gap(1);
+      document.querySelectorAll('#body_s8 .s8_dynamic').forEach(function(el){
+        var row=el.closest('.dynamic-exposure-row');
+        var label=row ? row.querySelector('label') : null;
+        subSubItem('',''+(label ? label.textContent.trim() : 'Exposure control:')+':',el.value);
+        gap(1);
+      });
+      gap(5);
     }
     else if (s.id === 's9') {
       secBanner(sNum,'Physical and Chemical Properties',false);
@@ -1058,6 +1340,17 @@ function generatePDF() {
       if(v('s9_other')) bodyText(v('s9_other'),5); gap(1);
       if(v('s9_phys')){subSubItem(sNum+'.2.1.','Information with regard to physical hazard classes:',v('s9_phys')); gap(1);}
       if(v('s9_safe')){subSubItem(sNum+'.2.2.','Other safety characteristics:',v('s9_safe'));}
+      var card9 = document.getElementById('card_s9');
+      if(card9){
+        card9.querySelectorAll('.s9-dynamic-property').forEach(function(row){
+          var lab = row.querySelector('.s9-dyn-label');
+          var val = row.querySelector('.s9-dyn-value');
+          if(lab && lab.value.trim()){
+            subItem('', lab.value.trim() + ':', val ? val.value : '');
+            gap(1);
+          }
+        });
+      }
       gap(5);
     }
     else if (s.id === 's11') {
@@ -1070,7 +1363,19 @@ function generatePDF() {
       subSubItem(sNum+'.1.5.','Delayed and immediate effects as well as chronic effects from short and long-term exposure:',v('s11_chr')); gap(1);
       subSubItem(sNum+'.1.6.','Interactive effects:',v('s11_int')); gap(1);
       subSubItem(sNum+'.1.7.','Absence of specific data:',v('s11_abs')); gap(2);
-      subItem(sNum+'.2.','Information on other hazards:'); bodyText(v('s11_oth'),5); gap(5);
+      subItem(sNum+'.2.','Information on other hazards:'); bodyText(v('s11_oth'),5); gap(2);
+      var card11 = document.getElementById('card_s11');
+      if(card11){
+        card11.querySelectorAll('.s11-dynamic-row').forEach(function(row){
+          var lab=row.querySelector('.s11-dyn-label');
+          var val=row.querySelector('.s11-dyn-value');
+          if(lab && lab.value.trim()){
+            subItem('', lab.value.trim() + ':', val ? val.value : '');
+            gap(1);
+          }
+        });
+      }
+      gap(5);
     }
     else if (s.id === 's12') {
       secBanner(sNum,'Ecological Information',false);
@@ -1080,12 +1385,36 @@ function generatePDF() {
       subItem(sNum+'.4.','Mobility in soil:'); bodyText(v('s12_mob')||'Not available',5); gap(2);
       subItem(sNum+'.5.','Results of PBT and vPvB assessment:'); bodyText(v('s12_pbt')||'Not available',5); gap(2);
       subItem(sNum+'.6.','Endocrine disrupting properties:'); bodyText(v('s12_end')||'Not described',5); gap(2);
-      subItem(sNum+'.7.','Other adverse effects:'); bodyText(v('s12_oth')||'Not described',5); gap(5);
+      subItem(sNum+'.7.','Other adverse effects:'); bodyText(v('s12_oth')||'Not described',5); gap(2);
+      var card12 = document.getElementById('card_s12');
+      if(card12){
+        card12.querySelectorAll('.s12-dynamic-row').forEach(function(row){
+          var lab=row.querySelector('.s12-dyn-label');
+          var val=row.querySelector('.s12-dyn-value');
+          if(lab && lab.value.trim()){
+            subItem('', lab.value.trim() + ':', val ? val.value : '');
+            gap(1);
+          }
+        });
+      }
+      gap(5);
     }
     else if (s.id === 's15') {
       secBanner(sNum,'Regulatory Information',false);
       subItem(sNum+'.1.','Safety, health and environmental regulations/legislation specific for the substance or mixture:'); bodyText(v('s15_reg'),5); gap(2);
-      subItem(sNum+'.2.','Chemical safety assessment:'); bodyText(v('s15_csa'),5); gap(5);
+      subItem(sNum+'.2.','Chemical safety assessment:'); bodyText(v('s15_csa'),5); gap(2);
+      var card15 = document.getElementById('card_s15');
+      if(card15){
+        card15.querySelectorAll('.s15-dynamic-row').forEach(function(row){
+          var lab = row.querySelector('.s15-dyn-label');
+          var val = row.querySelector('.s15-dyn-value');
+          if(lab && lab.value.trim()){
+            subItem('', lab.value.trim() + ':', val ? val.value : '');
+            gap(1);
+          }
+        });
+      }
+      gap(5);
     }
   });
 
@@ -1102,6 +1431,62 @@ function generatePDF() {
 document.getElementById('hdrImg').src = LOGO_B64;
 renderSidebar();
 renderSections();
+
+function addSection9Property(){
+  var card=document.getElementById('card_s9'), controls=document.getElementById('s9-add-controls');
+  if(!card || !controls) return;
+  var row=document.createElement('div');
+  row.className='dynamic-added-row s9-dynamic-property';
+  row.innerHTML='<div class="r2"><div class="field"><label>Property</label><input type="text" class="s9-dyn-label" placeholder="Property name"></div><div class="field"><label>Value / Test Method / Remarks</label><input type="text" class="s9-dyn-value" placeholder="Value / test method / remarks"></div></div><button type="button" class="remove-single" onclick="this.parentElement.remove()">Remove</button>';
+  controls.parentNode.insertBefore(row,controls);
+}
+function removeSection9Property(){
+  var card=document.getElementById('card_s9');
+  if(!card) return;
+  var rows=card.querySelectorAll('.s9-dynamic-property');
+  if(rows.length) rows[rows.length-1].remove();
+}
+function addSection15Row(){
+  var card=document.getElementById('card_s15'), controls=document.getElementById('s15-add-controls');
+  if(!card || !controls) return;
+  var row=document.createElement('div');
+  row.className='dynamic-added-row s15-dynamic-row';
+  row.innerHTML='<div class="r2"><div class="field"><label>Regulatory information / heading</label><input type="text" class="s15-dyn-label" placeholder="e.g. 15.3 Additional regulation"></div><div class="field"><label>Details</label><textarea class="s15-dyn-value" placeholder="Enter regulatory information..."></textarea></div></div><button type="button" class="remove-single" onclick="this.parentElement.remove()">Remove</button>';
+  controls.parentNode.insertBefore(row,controls);
+}
+function removeSection15Row(){
+  var card=document.getElementById('card_s15');
+  if(!card) return;
+  var rows=card.querySelectorAll('.s15-dynamic-row');
+  if(rows.length) rows[rows.length-1].remove();
+}
+
+function addSection11Row(){
+  var card=document.getElementById('card_s11'), controls=document.getElementById('s11-add-controls');
+  if(!card||!controls)return;
+  var row=document.createElement('div');
+  row.className='dynamic-added-row s11-dynamic-row';
+  row.innerHTML='<div class="r2"><div class="field"><label>Section 11 heading</label><input type="text" class="s11-dyn-label" placeholder="e.g. 11.1.8 Additional toxicological information"></div><div class="field"><label>Details</label><textarea class="s11-dyn-value" placeholder="Enter information..."></textarea></div></div><button type="button" class="remove-single" onclick="this.parentElement.remove()">Remove</button>';
+  controls.parentNode.insertBefore(row,controls);
+}
+function removeSection11Row(){
+  var card=document.getElementById('card_s11'); if(!card)return;
+  var rows=card.querySelectorAll('.s11-dynamic-row');
+  if(rows.length)rows[rows.length-1].remove();
+}
+function addSection12Row(){
+  var card=document.getElementById('card_s12'), controls=document.getElementById('s12-add-controls');
+  if(!card||!controls)return;
+  var row=document.createElement('div');
+  row.className='dynamic-added-row s12-dynamic-row';
+  row.innerHTML='<div class="r2"><div class="field"><label>Section 12 heading</label><input type="text" class="s12-dyn-label" placeholder="e.g. 12.8 Additional ecological information"></div><div class="field"><label>Details</label><textarea class="s12-dyn-value" placeholder="Enter information..."></textarea></div></div><button type="button" class="remove-single" onclick="this.parentElement.remove()">Remove</button>';
+  controls.parentNode.insertBefore(row,controls);
+}
+function removeSection12Row(){
+  var card=document.getElementById('card_s12'); if(!card)return;
+  var rows=card.querySelectorAll('.s12-dynamic-row');
+  if(rows.length)rows[rows.length-1].remove();
+}
 </script>
 </body>
 </html>
